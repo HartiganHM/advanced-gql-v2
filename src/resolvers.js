@@ -1,4 +1,8 @@
+const { PubSub } = require("apollo-server");
+
 const { authenticated, authorized } = require("./auth");
+
+const pubsub = new PubSub();
 const NEW_POST = "NEW_POST";
 
 /**
@@ -76,6 +80,11 @@ module.exports = {
 
       const token = createToken(user);
       return { token, user };
+    },
+  },
+  Subscription: {
+    newPost: {
+      subscribe: () => pubsub.asyncIterator(NEW_POST),
     },
   },
   User: {
