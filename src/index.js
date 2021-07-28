@@ -1,4 +1,4 @@
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer, AuthenticationError } = require("apollo-server");
 const typeDefs = require("./typedefs");
 const resolvers = require("./resolvers");
 const { createToken, getUserFromToken } = require("./auth");
@@ -25,7 +25,7 @@ const server = new ApolloServer({
       console.log(params);
       // Can be used to globally shut down subscription
       if (!user) {
-        throw new Error("Nope!");
+        throw new AuthenticationError("Nope!");
       }
 
       return { user };
