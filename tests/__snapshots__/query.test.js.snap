@@ -22,3 +22,22 @@ Object {
   },
 }
 `;
+
+exports[`queries me 1`] = `
+Object {
+  "data": Object {
+    "me": Object {
+      "email": "torbear@roo.com",
+      "id": "1",
+      "role": "ADMIN",
+    },
+  },
+  "errors": undefined,
+  "extensions": undefined,
+  "http": Object {
+    "headers": Headers {
+      Symbol(map): Object {},
+    },
+  },
+}
+`;
