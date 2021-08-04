@@ -8,6 +8,15 @@
       "avatar": "http",
       "createdAt": 1571213104370,
       "id": "Z2hlvDmLOSRZGebC_Z_aA"
+    },
+    {
+      "email": "hartigan.hm@gmail.com",
+      "password": "butt123",
+      "role": "ADMIN",
+      "verified": false,
+      "avatar": "http",
+      "createdAt": 1628092184498,
+      "id": "O8XNrIRhROAauWPZY1Vjm"
     }
   ],
   "posts": [],
