@@ -1,23 +1,48 @@
-const { ApolloServer, PubSub } = require("apollo-server");
+const {
+  ApolloServer,
+  PubSub,
+  SchemaDirectiveVisitor,
+} = require("apollo-server");
 const gql = require("graphql-tag");
+const { defaultFieldResolver } = require("graphql");
 
 const pubSub = new PubSub();
 const NEW_ITEM = "NEW_ITEM";
 
 /**
- * Directives use @ sign followed by the directive name and are placed
+ * Schema Directives use @ sign followed by the directive name and are placed
  * to the right of the field; will continue to return if available, but will
  * show a warning in the schema/docs
- * 
+ *
  * Instrumentation at the schema level (added meta data)
+ *
+ * Client side directives:
+ *   - @include (if: $yes)
+ *   - @skip
+ *   - @live
+ *
+ * !Lodash GraphQL client side directives
  */
 
+class LogDirective extends SchemaDirectiveVisitor {
+  visitFieldDefinition(field) {
+    const resolver = field.resolver || defaultFieldResolver;
+    field.resolve = (args) => {
+      console.log("🔥 Hello!");
+      return resolver.apply(this, args);
+    };
+  }
+}
+
 const typeDefs = gql`
+  directive @log on FIELD_DEFINITION
+
   type User {
-    id: ID!
-    error: String! @deprecated(reason: "Beacause I said so, use the other field")
+    id: ID! @log
+    error: String!
+      @deprecated(reason: "Beacause I said so, use the other field")
     username: String
-    createdAt: Int!
+    createdAt: String!
   }
 
   type Settings {
@@ -89,6 +114,9 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  schemaDirectives: {
+    log: LogDirective,
+  },
   context({ connection, req }) {
     if (connection) {
       return { ...connection.context };
@@ -96,10 +124,8 @@ const server = new ApolloServer({
   },
   subscriptions: {
     // params === req.headers
-    onConnect(params) {
-
-    }
-  }
+    onConnect(params) {},
+  },
 });
 
 server.listen().then(({ url }) => console.log(`server at ${url}`));
