@@ -4,9 +4,18 @@ const gql = require("graphql-tag");
 const pubSub = new PubSub();
 const NEW_ITEM = "NEW_ITEM";
 
+/**
+ * Directives use @ sign followed by the directive name and are placed
+ * to the right of the field; will continue to return if available, but will
+ * show a warning in the schema/docs
+ * 
+ * Instrumentation at the schema level (added meta data)
+ */
+
 const typeDefs = gql`
   type User {
     id: ID!
+    error: String! @deprecated(reason: "Beacause I said so, use the other field")
     username: String
     createdAt: Int!
   }
