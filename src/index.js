@@ -13,7 +13,7 @@ const server = new ApolloServer({
       return { ...context, ...connection.context };
     }
 
-    const token = req.headers.authorization;
+    const token = req.headers.authtoken;
     const user = getUserFromToken(token);
     return { ...db, user, createToken };
   },
@@ -22,7 +22,6 @@ const server = new ApolloServer({
     onConnect(params) {
       const token = params.authToken;
       const user = getUserFromToken(token);
-      console.log(params);
       // Can be used to globally shut down subscription
       if (!user) {
         throw new AuthenticationError("Nope!");
