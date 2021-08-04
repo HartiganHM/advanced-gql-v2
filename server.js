@@ -27,7 +27,7 @@ const NEW_ITEM = "NEW_ITEM";
 class LogDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const resolver = field.resolver || defaultFieldResolver;
-    field.resolve = (args) => {
+    field.resolve = (...args) => {
       console.log("🔥 Hello!");
       return resolver.apply(this, args);
     };
