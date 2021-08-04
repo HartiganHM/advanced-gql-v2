@@ -4,7 +4,7 @@ const {
   SchemaDirectiveVisitor,
 } = require("apollo-server");
 const gql = require("graphql-tag");
-const { defaultFieldResolver } = require("graphql");
+const { defaultFieldResolver, GraphQLString } = require("graphql");
 
 const pubSub = new PubSub();
 const NEW_ITEM = "NEW_ITEM";
@@ -27,18 +27,25 @@ const NEW_ITEM = "NEW_ITEM";
 class LogDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const resolver = field.resolver || defaultFieldResolver;
-    field.resolve = (...args) => {
-      console.log("🔥 Hello!");
-      return resolver.apply(this, args);
+
+    field.args.push({
+      type: GraphQLString,
+      name: "message",
+    });
+
+    field.resolve = (root, { message, ...rest }, ctx, info) => {
+      const { message: schemaMessage } = this.args;
+      console.log("🔥 Hello!", message || schemaMessage);
+      return resolver.call(this, root, rest, ctx, info);
     };
   }
 }
 
 const typeDefs = gql`
-  directive @log on FIELD_DEFINITION
+  directive @log(message: String = "my message") on FIELD_DEFINITION
 
   type User {
-    id: ID! @log
+    id: ID! @log(message: "Id here")
     error: String!
       @deprecated(reason: "Beacause I said so, use the other field")
     username: String
