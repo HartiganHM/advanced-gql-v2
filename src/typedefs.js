@@ -1,6 +1,8 @@
 const gql = require('graphql-tag')
 
 module.exports = gql`
+  directive @authentication on FIELD_DEFINITION
+  directive @authorization(role: Role! = GUEST) on FIELD_DEFINITION
   directive @formatDate(format: String = "dd MMM yyyy") on FIELD_DEFINITION
 
   enum Theme {
