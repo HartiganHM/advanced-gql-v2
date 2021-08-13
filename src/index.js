@@ -13,8 +13,8 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   schemaDirectives: {
-    authentication: AuthenticationDirective,
-    authorization: AuthorizationDirective,
+    authenticated: AuthenticationDirective,
+    authorized: AuthorizationDirective,
     formatDate: FormatDateDirective,
   },
   context({ req, connection }) {
