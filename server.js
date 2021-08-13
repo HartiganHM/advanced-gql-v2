@@ -48,13 +48,17 @@ class LogDirective extends SchemaDirectiveVisitor {
 
 class FormateDateDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
+    // Use fields resolver or default
     const resolver = field.resolver || defaultFieldResolver;
 
     field.resolve = async (...args) => {
+      // Allow the fields value to resolve
+      // May be asynchronous, so we use async/await, just in case
       const result = await resolver.apply(this, args);
+      // Formate the result of the field using our utility
       const formattedDate = formatDate(result, "MMM dd, yyyy");
-      console.log(formattedDate);
 
+      // Return formattedDate
       return formattedDate;
     };
   }
