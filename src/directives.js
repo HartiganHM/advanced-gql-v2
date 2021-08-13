@@ -1,4 +1,7 @@
-const { SchemaDirectiveVisitor } = require("apollo-server");
+const {
+  AuthenticationError,
+  SchemaDirectiveVisitor,
+} = require("apollo-server");
 const { defaultFieldResolver, GraphQLString } = require("graphql");
 const { formatDate } = require("./utils");
 
@@ -12,9 +15,9 @@ class FormatDateDirective extends SchemaDirectiveVisitor {
       type: GraphQLString,
     });
 
-    field.resolve = async (root, { format, ...rest }, ctx, info) => {
+    field.resolve = async (root, { format, ...rest }, context, info) => {
       // When arguments from the user ARE being passed
-      const result = await resolver.call(this, root, rest, ctx, info);
+      const result = await resolver.call(this, root, rest, context, info);
 
       // When arguments from the user are NOT being passed
       // const result = await resolver.apply(this, args);
@@ -26,6 +29,26 @@ class FormatDateDirective extends SchemaDirectiveVisitor {
   }
 }
 
+class AuthenticationDirective extends SchemaDirectiveVisitor {
+  visitArgumentDefinition(field) {
+    // Grab the user from the context
+    const resolver = field.resolve || defaultFieldResolver;
+
+    field.resolve = async (root, args, context, info) => {
+      if (!context.user) {
+        // If the user isn't there throw an error
+        throw new AuthenticationError("Not authenticated");
+      }
+
+      return resolver(root, args, context, info);
+    };
+  }
+}
+
+class AuthorizationDirective extends SchemaDirectiveVisitor {}
+
 module.exports = {
+  AuthenticationDirective,
+  AuthorizationDirective,
   FormatDateDirective,
 };
