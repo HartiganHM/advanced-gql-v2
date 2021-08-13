@@ -51,16 +51,26 @@ module.exports = {
       return models.User.updateOne({ id: user.id }, input);
     }),
     // admin role
-    invite: authenticated(
-      authorized("ADMIN", (_, { input }, { user }) => {
-        return {
-          from: user.id,
-          role: input.role,
-          createdAt: Date.now(),
-          email: input.email,
-        };
-      })
-    ),
+    // Allow directive to check for authorization
+    invite: (_, { input }, { user }) => {
+      return {
+        from: user.id,
+        role: input.role,
+        createdAt: Date.now(),
+        email: input.email,
+      };
+    },
+
+    // Mutation level authorization
+    // invite: authorized("ADMIN", (_, { input }, { user }) => {
+    //   return {
+    //     from: user.id,
+    //     role: input.role,
+    //     createdAt: Date.now(),
+    //     email: input.email,
+    //   };
+    // })
+    // },
 
     signup(_, { input }, { models, createToken }) {
       const existing = models.User.findOne({ email: input.email });
