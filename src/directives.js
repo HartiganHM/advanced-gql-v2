@@ -31,7 +31,7 @@ class FormatDateDirective extends SchemaDirectiveVisitor {
 }
 
 class AuthenticationDirective extends SchemaDirectiveVisitor {
-  visitArgumentDefinition(field) {
+  visitFieldDefinition(field) {
     // Grab the user from the context
     const resolver = field.resolve || defaultFieldResolver;
 
@@ -47,7 +47,7 @@ class AuthenticationDirective extends SchemaDirectiveVisitor {
 }
 
 class AuthorizationDirective extends SchemaDirectiveVisitor {
-  visitArgumentDefinition(field) {
+  visitFieldDefinition(field) {
     const resolver = field.resolve || defaultFieldResolver;
     // Grab the role for this.args and compare against user.role
     const { role } = this.args;
