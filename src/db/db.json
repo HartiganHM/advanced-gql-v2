@@ -17,6 +17,15 @@
       "avatar": "http",
       "createdAt": 1628092184498,
       "id": "O8XNrIRhROAauWPZY1Vjm"
+    },
+    {
+      "email": "torin@roo.com",
+      "password": "butt123",
+      "role": "MEMBER",
+      "verified": false,
+      "avatar": "http",
+      "createdAt": 1628886537440,
+      "id": "1Xwd60sy7lx7KjIRpWRmP"
     }
   ],
   "posts": [],
