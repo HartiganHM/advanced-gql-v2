@@ -6,6 +6,8 @@ const {
 const gql = require("graphql-tag");
 const { defaultFieldResolver, GraphQLString } = require("graphql");
 
+const { formatDate } = require("./src/utils");
+
 const pubSub = new PubSub();
 const NEW_ITEM = "NEW_ITEM";
 
@@ -33,23 +35,41 @@ class LogDirective extends SchemaDirectiveVisitor {
       name: "message",
     });
 
+    // Message passed by user
     field.resolve = (root, { message, ...rest }, ctx, info) => {
+      // Default message applied at directive instantiation
       const { message: schemaMessage } = this.args;
+      // Log message passed by user || default message
       console.log("🔥 Hello!", message || schemaMessage);
       return resolver.call(this, root, rest, ctx, info);
     };
   }
 }
 
+class FormateDateDirective extends SchemaDirectiveVisitor {
+  visitFieldDefinition(field) {
+    const resolver = field.resolver || defaultFieldResolver;
+
+    field.resolve = async (...args) => {
+      const result = await resolver.apply(this, args);
+      const formattedDate = formatDate(result, "MMM dd, yyyy");
+      console.log(formattedDate);
+
+      return formattedDate;
+    };
+  }
+}
+
 const typeDefs = gql`
   directive @log(message: String = "my message") on FIELD_DEFINITION
+  directive @formatDate on FIELD_DEFINITION
 
   type User {
     id: ID! @log(message: "Id here")
     error: String!
       @deprecated(reason: "Beacause I said so, use the other field")
     username: String
-    createdAt: String!
+    createdAt: String! @formatDate
   }
 
   type Settings {
@@ -86,7 +106,7 @@ const resolvers = {
     me: () => ({
       id: "187324784",
       username: "Hugh",
-      cratedAt: 73928579823,
+      createdAt: 1628092184498,
     }),
     settings: (_, { user }) => ({
       user,
@@ -113,7 +133,7 @@ const resolvers = {
     user: (settings) => ({
       id: "187324784",
       username: "Hugh",
-      cratedAt: 73928579823,
+      createdAt: 1628092184498,
     }),
   },
 };
@@ -123,6 +143,7 @@ const server = new ApolloServer({
   resolvers,
   schemaDirectives: {
     log: LogDirective,
+    formatDate: FormateDateDirective,
   },
   context({ connection, req }) {
     if (connection) {
