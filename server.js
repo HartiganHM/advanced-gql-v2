@@ -46,7 +46,7 @@ class LogDirective extends SchemaDirectiveVisitor {
   }
 }
 
-class FormateDateDirective extends SchemaDirectiveVisitor {
+class FormatDateDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     // Use fields resolver or default
     const resolver = field.resolver || defaultFieldResolver;
@@ -147,7 +147,7 @@ const server = new ApolloServer({
   resolvers,
   schemaDirectives: {
     log: LogDirective,
-    formatDate: FormateDateDirective,
+    formatDate: FormatDateDirective,
   },
   context({ connection, req }) {
     if (connection) {
