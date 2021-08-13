@@ -1,5 +1,6 @@
 const {
   AuthenticationError,
+  ForbiddenError,
   SchemaDirectiveVisitor,
 } = require("apollo-server");
 const { defaultFieldResolver, GraphQLString } = require("graphql");
@@ -45,7 +46,22 @@ class AuthenticationDirective extends SchemaDirectiveVisitor {
   }
 }
 
-class AuthorizationDirective extends SchemaDirectiveVisitor {}
+class AuthorizationDirective extends SchemaDirectiveVisitor {
+  visitArgumentDefinition(field) {
+    const resolver = field.resolve || defaultFieldResolver;
+    // Grab the role for this.args and compare against user.role
+    const { role } = this.args;
+
+    field.resolve = async (root, args, context, info) => {
+      if (context.user.role !== role) {
+        // If user.role isn't there throw an error
+        throw new ForbiddenError(`Not authorized, must be role of ${role}`);
+      }
+
+      return resolver(root, args, context, info);
+    };
+  }
+}
 
 module.exports = {
   AuthenticationDirective,
